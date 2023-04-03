@@ -75,3 +75,14 @@ package*
 
 build/fq_asm.o
 build/fr_asm.o
+
+# ide
+.idea
+
+# benchmark
+benchmark/common/ptau/*.ptau
+benchmark/common/circomlib/
+benchmark/sha256/circuit/proof.json
+benchmark/sha256/circuit/public.json
+#benchmark/common
+#!benchmark/common/circomlib/setup_circomlib.sh
