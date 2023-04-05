@@ -10,14 +10,18 @@ SCRIPT_DIR=$(dirname "$SCRIPT")
 CIRCUIT_DIR=${SCRIPT_DIR}"/circuit/compiled"
 TAU_RANK=$1
 TAU_DIR=${SCRIPT_DIR}"/../common/ptau"
-TAU_FILE="${TAU_DIR}/powersOfTau28_hez_final_${TAU_RANK}.ptau"
+TAU_FILE=p"owersOfTau28_hez_final_${TAU_RANK}.ptau"
+TAU_FILE_WITH_DIR="${TAU_DIR}/${TAU_FILE}"
 
-if [ ! -f "$TAU_FILE" ]; then
-  wget -P "$TAU_DIR" https://hermez.s3-eu-west-1.amazonaws.com/powersOfTau28_hez_final_${TAU_RANK}.ptau
-fi
+# call scripit with tau_file as an input
+../common/download_ptau.sh "$TAU_FILE"
+# deprecated
+#if [ ! -f "$TAU_FILE" ]; then
+#  wget -P "$TAU_DIR" https://hermez.s3-eu-west-1.amazonaws.com/powersOfTau28_hez_final_${TAU_RANK}.ptau
+#fi
 
 pushd "$CIRCUIT_DIR" || exit
-snarkjs groth16 setup sha256.r1cs ${TAU_FILE} sha256_0000.zkey
+snarkjs groth16 setup sha256.r1cs ${TAU_FILE_WITH_DIR} sha256_0000.zkey
 echo 1 | snarkjs zkey contribute sha256_0000.zkey sha256_0001.zkey --name='cont' -v
 snarkjs zkey export verificationkey sha256_0001.zkey verification_key.json
 popd || exit
