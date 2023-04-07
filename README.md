@@ -112,7 +112,7 @@ by this one
 
 ## Benchmark
 
-We have developed a dedicated section for benchmarking tests within the rapidsnark repository. These tests cover the common circuits implementations, aiming to provide insight into the performance and cost of widely-used proofs.
+This section aims to provide insight into the performance and cost of widely-used proofs with rapidsnark. We are testing the most commonly used circuits with different inputs and scenarios to better understand their behavior under various conditions and explore opportunities for optimization.
 
 Please navigate to the [/benchmark](./benchmark)  folder to explore the benchmarking tests.
 
