@@ -112,12 +112,9 @@ by this one
 
 ## Benchmark
 
-This prover parallelizes as much as it can the proof generation.
+We have developed a dedicated section for benchmarking tests within the rapidsnark repository. These tests cover the common circuits implementations, aiming to provide insight into the performance and cost of widely-used proofs.
 
-The prover is much faster that snarkjs and faster than bellman.
-
-[TODO] Some comparative tests should be done.
-
+Please navigate to the [/benchmark](./benchmark)  folder to explore the benchmarking tests.
 
 ## License
 
