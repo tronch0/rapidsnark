@@ -78,10 +78,3 @@ build/fr_asm.o
 
 # ide
 .idea
-
-# benchmark
-benchmark/common/ptau
-benchmark/common/circomlib/
-benchmark/sha256/circuit/compiled
-benchmark/poseidon/circuit/compiled
-
