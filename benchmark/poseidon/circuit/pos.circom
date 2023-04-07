@@ -13,7 +13,6 @@ template Main(N) {
         pos.inputs[i] <== in[i];
     }
     out <== pos.out;
-    log(out);
     out === hash;
 }
 
