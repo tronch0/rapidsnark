@@ -1,15 +1,15 @@
 
-# Benchmark Tests for rapidsnark
+# Benchmark Tests
 
-This folder contains a series of benchmark tests and utilities designed to evaluate and optimize the performance of the rapidsnark prover with various circuits implementations.
+This folder contains a series of benchmark tests designed to evaluate the performance of rapidsnark prover with commonly circuits implementations.
 
 ## Overview
 
-The benchmark tests cover the most common circuit implementations, aiming to provide insight into the performance and cost of widely-used circuits. By offering a comprehensive set of benchmarking tests, we aim to foster a better understanding of the current performance levels of rapidsnark.
+The benchmark tests cover the most common circuit implementations, aiming to provide insight into the performance and cost of widely-used circuits. By offering a comprehensive set of benchmarking tests, we aim to gain better understanding of the current performance levels of rapidsnark.
 
 ## Getting Started
 
-Before running the benchmark tests, ensure that you have followed the instructions in the main `README.md` file to set up the rapidsnark environment, and you have the prover executable in the `build`/`build_prover` folder.
+Before running the benchmark tests, ensure that you have followed the instructions in the main `README.md` file to set up the rapidsnark environment. Make sure you have the prover executable in the `build`/`build_prover` folder.
 
 A valid environment to run the benchmark tests contains the following:
  - prover executable in the `build`/`build_prover` folder
@@ -24,23 +24,11 @@ A valid environment to run the benchmark tests contains the following:
 
 To run a specific benchmark test, run the `benchmark_mac.sh` with the following arguments:
 
- - <strong>Input file number</strong> - the number after the `input_` in the input file to the circuit (check input folder for the specific benchmark test)
- - <strong>The power of tau file number</strong> - for the setup phase (it'll be downloaded if not exist in the designated folder)
+ - <strong>Input Parameters file</strong> - to choose the input file you wish to use in the proving process you need to pass the postfix after `input_` of the filename.
+ - <strong>Degree of ptau file</strong> - specify the degree of the needed patu (will be downloaded if not exist).
 
-So if we want to run a Merkle Tree inclusion proof for a tree with height of 30, we will need to run the following command `./benchmark_mac.sh 20 30` in the mt_inclusion directory.
-
-[//]: # (## Utils)
-
-[//]: # ()
-[//]: # (This folder also contains utilities that can be used to assist with the benchmarking process or to analyze the results. Here's a brief overview of each utility:)
-
-[//]: # ()
-[//]: # (1. [Utility 1 Description]&#40;./utils/utility1&#41; - Briefly describe the purpose and function of Utility 1.)
-
-[//]: # (2. [Utility 2 Description]&#40;./utils/utility2&#41; - Briefly describe the purpose and function of Utility 2.)
-
-[//]: # ()
-[//]: # (For more information on how to use each utility, please refer to the documentation provided in the corresponding utility folder.)
+### Example
+Say we want to run a benchmark on merkle tree inclusion proof for a tree with height of 30, we will need to navigate to the `/mt_inclusion` directory and run the following command `./benchmark_mac.sh 20 30`.
 
 ## Contributing
 
