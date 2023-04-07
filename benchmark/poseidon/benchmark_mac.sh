@@ -23,15 +23,15 @@ export NODE_OPTIONS=--max_old_space_size=327680
 
 function renderCircom() {
   pushd "$CIRCUIT_DIR"
-  echo sed -i '' "s/Main([0-9]*)/Main($INPUT_SIZE)/" sha256.circom
-  sed -i '' "s/Main([0-9]*)/Main($INPUT_SIZE)/" sha256.circom
+  echo sed -i '' "s/Main([0-9]*)/Main($INPUT_SIZE)/" pos.circom
+  sed -i '' "s/Main([0-9]*)/Main($INPUT_SIZE)/" pos.circom
   popd
 }
 
 function compile() {
   pushd "$CIRCUIT_DIR"
-  echo circom sha256.circom --r1cs --sym --wasm -o compiled
-  circom sha256.circom --r1cs --sym --wasm -o compiled
+  echo circom pos.circom --r1cs --sym --wasm -o compiled
+  circom pos.circom --r1cs --sym --wasm -o compiled
   popd
 }
 
@@ -42,7 +42,7 @@ function setup() {
   fi
   echo "${TIME[@]}" "$SCRIPT_DIR"/trusted_setup.sh "$TAU_RANK"
   "${TIME[@]}" "$SCRIPT_DIR"/trusted_setup.sh "$TAU_RANK"
-  prove_key_size=$(ls -lh "$CIRCUIT_DIR"/compiled/sha256_0001.zkey | awk '{print $5}')
+  prove_key_size=$(ls -lh "$CIRCUIT_DIR"/compiled/pos_0001.zkey | awk '{print $5}')
   verify_key_size=$(ls -lh "$CIRCUIT_DIR"/compiled/verification_key.json | awk '{print $5}')
   echo "Prove key size: $prove_key_size"
   echo "Verify key size: $verify_key_size"
@@ -51,8 +51,8 @@ function setup() {
 #  witness generation by c++ is not supported on M1 arm64
 function generateWtns() {
   pushd "$CIRCUIT_DIR"
-  echo node compiled/sha256_js/generate_witness.js compiled/sha256_js/sha256.wasm ../input/input_${INPUT_SIZE}.json compiled/witness.wtns
-  "${TIME[@]}" node compiled/sha256_js/generate_witness.js compiled/sha256_js/sha256.wasm ../input/input_${INPUT_SIZE}.json compiled/witness.wtns
+  echo node compiled/pos_js/generate_witness.js compiled/pos_js/pos.wasm ../input/input_${INPUT_SIZE}.json compiled/witness.wtns
+  "${TIME[@]}" node compiled/pos_js/generate_witness.js compiled/pos_js/pos.wasm ../input/input_${INPUT_SIZE}.json compiled/witness.wtns
   popd
 }
 
@@ -79,7 +79,7 @@ avg_time() {
 
 #function normalProve() {
 #  pushd "$CIRCUIT_DIR"
-#  avg_time 10 snarkjs groth16 prove sha256_0001.zkey witness.wtns proof.json public.json
+#  avg_time 10 snarkjs groth16 prove pos_0001.zkey witness.wtns proof.json public.json
 #  proof_size=$(ls -lh proof.json | awk '{print $5}')
 #  echo "Proof size: $proof_size"
 #  popd
@@ -88,7 +88,7 @@ avg_time() {
 
 function rapidProve() {
   pushd "$CIRCUIT_DIR"
-  avg_time 10 "$RAPID_SNARK_PROVER" compiled/sha256_0001.zkey compiled/witness.wtns compiled/proof.json compiled/public.json
+  avg_time 10 "$RAPID_SNARK_PROVER" compiled/pos_0001.zkey compiled/witness.wtns compiled/proof.json compiled/public.json
   proof_size=$(ls -lh compiled/proof.json | awk '{print $5}')
   echo "Proof size: $proof_size"
   popd
@@ -101,10 +101,10 @@ function verify() {
 }
 
 
-echo "========== Step0: render circuit  =========="
+echo "========== Step0: render circom  =========="
 renderCircom
 
-echo "========== Step1: compile circuit  =========="
+echo "========== Step1: compile circom  =========="
 compile
 
 echo "========== Step2: setup =========="
@@ -113,7 +113,7 @@ setup
 echo "========== Step3: generate witness  =========="
 generateWtns
 
-echo "========== Step4: prove (rapidSnark) =========="
+echo "========== Step4: prove  =========="
 rapidProve
 
 echo "========== Step5: verify  =========="

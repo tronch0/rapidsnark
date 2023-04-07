@@ -82,9 +82,6 @@ build/fr_asm.o
 # benchmark
 benchmark/common/ptau
 benchmark/common/circomlib/
-benchmark/sha256/circuit/proof.json
-benchmark/sha256/circuit/public.json
 benchmark/sha256/circuit/compiled
+benchmark/poseidon/circuit/compiled
 
-#benchmark/common
-#!benchmark/common/circomlib/setup_circomlib.sh
