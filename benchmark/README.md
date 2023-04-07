@@ -13,7 +13,7 @@ Before running the benchmark tests, ensure that you have followed the instructio
 
 A valid environment to run the benchmark tests contains the following:
  - prover executable in the `build`/`build_prover` folder
- - Clone circomlib by running the script [benchmark/common/setup_circomlib.sh](benchmark/common/setup_circomlib.sh)
+ - Clone circomlib by running the script [benchmark/common/setup_circomlib.sh](./common/setup_circomlib.sh)
 
 
 ## Running the Benchmark Tests
@@ -26,6 +26,8 @@ To run a specific benchmark test, run the `benchmark_mac.sh` with the following 
 
  - <strong>Input file number</strong> - the number after the `input_` in the input file to the circuit (check input folder for the specific benchmark test)
  - <strong>The power of tau file number</strong> - for the setup phase (it'll be downloaded if not exist in the designated folder)
+
+So if we want to run a Merkle Tree inclusion proof for a tree with height of 30, we will need to run the following command `./benchmark_mac.sh 20 30` in the mt_inclusion directory.
 
 [//]: # (## Utils)
 
