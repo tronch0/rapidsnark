@@ -23,5 +23,5 @@ template Main(N) {
 }
 
 // render this file before compilation
-component main = Main(256);
+component main = Main(512);
 

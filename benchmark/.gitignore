@@ -4,6 +4,6 @@ common/circomlib/
 
 sha256/circuit/compiled
 poseidon/circuit/compiled
-mt_inclusion/circuit/compiled
+merkletree/circuit/compiled
 
 
