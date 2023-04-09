@@ -10,66 +10,84 @@ if [ $# -ne 3 ]; then
   exit 1
 fi
 
-BENCHMARK_NAME=$1
-INPUT_SIZE=$2
-TAU_RANK=$3
+benchmark_name=$1
+input_size=$2
+tau_rank=$3
 
-echo "Benchmark to test - $BENCHMARK_NAME"
-echo "Input size to use -  $INPUT_SIZE"
-echo "Power of tau rank to use - $TAU_RANK"
+echo "Benchmark to test - $benchmark_name"
+echo "Input size to use -  $input_size"
+echo "Power of tau rank to use - $tau_rank"
 
 set -e
-SCRIPT=$(realpath "$0")
-SCRIPT_DIR=$(dirname "$SCRIPT")
+script=$(realpath "$0")
+script_dir=$(dirname "$script")
 
-BENCHMARK_DIR="${SCRIPT_DIR}/${BENCHMARK_NAME}"
-CIRCUIT_DIR="${BENCHMARK_DIR}/circuit"
-COMPILED_DIR="${CIRCUIT_DIR}/compiled"
+benchmark_dir="${script_dir}/${benchmark_name}"
+circuit_dir="${benchmark_dir}/circuit"
+compiled_dir="${circuit_dir}/compiled"
 
-RAPID_SNARK_PROVER=${SCRIPT_DIR}"/../build_prover/src/prover"
+rapid_snark_prover=${script_dir}"/../build_prover/src/prover"
 TIME=(gtime -f "mem %M\ntime %e\ncpu %P")
 
-
 export NODE_OPTIONS=--max_old_space_size=327680
-# sysctl -w vm.max_map_count=655300
 
-function renderCircom() {
-  pushd "$CIRCUIT_DIR"
-  echo sed -i '' "s/Main([0-9]*)/Main($INPUT_SIZE)/" circuit.circom
-  sed -i '' "s/Main([0-9]*)/Main($INPUT_SIZE)/" circuit.circom
+function render_circuit() {
+  pushd "$circuit_dir"
+  echo sed -i '' "s/Main([0-9]*)/Main($input_size)/" circuit.circom
+  sed -i '' "s/Main([0-9]*)/Main($input_size)/" circuit.circom
   popd
 }
 
-function compile() {
-  pushd "$CIRCUIT_DIR"
-  echo circom circuit.circom --r1cs --sym --wasm -o "$COMPILED_DIR"
-  circom circuit.circom --r1cs --sym --wasm -o "$COMPILED_DIR"
+function compile_circuit() {
+  pushd "$circuit_dir"
+  echo circom circuit.circom --r1cs --sym --wasm -o "$compiled_dir"
+  circom circuit.circom --r1cs --sym --wasm -o "$compiled_dir"
   popd
 }
 
-function setup() {
-  echo "${TIME[@]}" ./trusted_setup.sh "$TAU_RANK"
-  "${TIME[@]}" ./trusted_setup.sh "$TAU_RANK" "$COMPILED_DIR"
+function run_setup() {
+  echo "${TIME[@]}" ./trusted_setup.sh "$tau_rank"
+  "${TIME[@]}" ./trusted_setup.sh "$tau_rank" "$compiled_dir"
 
-  prove_key_size=$(ls -lh "$COMPILED_DIR"/circuit_0001.zkey | awk '{print $5}')
-  verify_key_size=$(ls -lh "$COMPILED_DIR"/verification_key.json | awk '{print $5}')
+  prove_key_size=$(ls -lh "$compiled_dir"/circuit_0001.zkey | awk '{print $5}')
+  verify_key_size=$(ls -lh "$compiled_dir"/verification_key.json | awk '{print $5}')
 
   echo "Prove key size: $prove_key_size"
   echo "Verify key size: $verify_key_size"
 }
 
-#  witness generation by c++ is not supported on M1 arm64
-function generateWtns() {
-  pushd "$CIRCUIT_DIR"
-  echo node "$COMPILED_DIR/circuit_js/generate_witness.js" "$COMPILED_DIR/circuit_js/circuit.wasm" "$BENCHMARK_DIR/input/input_${INPUT_SIZE}.json" "$COMPILED_DIR/witness.wtns"
-  "${TIME[@]}" node "$COMPILED_DIR/circuit_js/generate_witness.js" "$COMPILED_DIR/circuit_js/circuit.wasm" "$BENCHMARK_DIR/input/input_${INPUT_SIZE}.json" "$COMPILED_DIR/witness.wtns"
+function generate_witness() {
+  pushd "$circuit_dir"
+  echo node "$compiled_dir/circuit_js/generate_witness.js" "$compiled_dir/circuit_js/circuit.wasm" "$benchmark_dir/input/input_${input_size}.json" "$compiled_dir/witness.wtns"
+  "${TIME[@]}" node "$compiled_dir/circuit_js/generate_witness.js" "$compiled_dir/circuit_js/circuit.wasm" "$benchmark_dir/input/input_${input_size}.json" "$compiled_dir/witness.wtns"
   popd
 }
 
-avg_time() {
-    #
-    # usage: avg_time n command ...
-    #
+#function normalProve() {
+#  pushd "$CIRCUIT_DIR"
+#  avg_time 10 snarkjs groth16 prove circuit_0001.zkey witness.wtns proof.json public.json
+#  proof_size=$(ls -lh proof.json | awk '{print $5}')
+#  echo "Proof size: $proof_size"
+#  popd
+#}
+
+
+function rapid_prove() {
+  pushd "$circuit_dir"
+  avg_time 10 "$rapid_snark_prover" "$compiled_dir/circuit_0001.zkey" "$compiled_dir/witness.wtns" "$compiled_dir/proof.json" "$compiled_dir/public.json"
+  proof_size=$(ls -lh "$compiled_dir/proof.json" | awk '{print $5}')
+  echo "Proof size: $proof_size"
+  popd
+}
+
+
+function verify_proof() {
+  pushd "$circuit_dir"
+  avg_time 10 snarkjs groth16 verify "$compiled_dir/verification_key.json" "$compiled_dir/public.json" "$compiled_dir/proof.json"
+  popd
+}
+
+function avg_time() {
     n=$1; shift
     (($# > 0)) || return
     echo "$@"
@@ -86,45 +104,34 @@ avg_time() {
                }'
 }
 
+function print_step() {
+  step_title=$(printf "%-23s" "$1")
 
-#function normalProve() {
-#  pushd "$CIRCUIT_DIR"
-#  avg_time 10 snarkjs groth16 prove circuit_0001.zkey witness.wtns proof.json public.json
-#  proof_size=$(ls -lh proof.json | awk '{print $5}')
-#  echo "Proof size: $proof_size"
-#  popd
-#}
-
-
-function rapidProve() {
-  pushd "$CIRCUIT_DIR"
-  avg_time 10 "$RAPID_SNARK_PROVER" "$COMPILED_DIR/circuit_0001.zkey" "$COMPILED_DIR/witness.wtns" "$COMPILED_DIR/proof.json" "$COMPILED_DIR/public.json"
-  proof_size=$(ls -lh "$COMPILED_DIR/proof.json" | awk '{print $5}')
-  echo "Proof size: $proof_size"
-  popd
+  echo ""
+  echo "============================================="
+  echo "========== $step_title =========="
+  echo "============================================="
 }
 
-function verify() {
-  pushd "$CIRCUIT_DIR"
-  avg_time 10 snarkjs groth16 verify "$COMPILED_DIR/verification_key.json" "$COMPILED_DIR/public.json" "$COMPILED_DIR/proof.json"
-  popd
-}
+print_step "Step0: Render Circuit"
+render_circuit
 
+print_step "Step1: Compile Circuit"
+compile_circuit
 
-echo "========== Step0: render circom  =========="
-renderCircom
+print_step "Step2: Setup"
+run_setup
 
-echo "========== Step1: compile circom  =========="
-compile
+print_step "Step3: Generate Witness"
+generate_witness
 
-echo "========== Step2: setup =========="
-setup
+print_step "Step4: Prove"
+rapid_prove
 
-echo "========== Step3: generate witness  =========="
-generateWtns
+print_step "Step5: Verify"
+verify_proof
 
-echo "========== Step4: prove  =========="
-rapidProve
-
-echo "========== Step5: verify  =========="
-verify
+echo ""
+echo "========================================"
+echo "Execution complete!"
+echo "========================================"
