@@ -61,33 +61,21 @@ function run_setup() {
 }
 
 function generate_witness() {
-#    if [[ "$(uname)" == "Darwin" ]]; then
-#      echo node "$compiled_dir/circuit_js/generate_witness.js" "$compiled_dir/circuit_js/circuit.wasm" "$benchmark_dir/input/input_${input_size}.json" "$compiled_dir/witness.wtns"
-#      "${TIME[@]}" node "$compiled_dir/circuit_js/generate_witness.js" "$compiled_dir/circuit_js/circuit.wasm" "$benchmark_dir/input/input_${input_size}.json" "$compiled_dir/witness.wtns"
-#    else
-#      echo "${TIME[@]}" sha256_test_cpp/sha256_test input_${INPUT_SIZE}.json witness.wtns    # need to adjust the call here
-#      "${TIME[@]}" sha256_test_cpp/sha256_test input_${INPUT_SIZE}.json witness.wtns         # need to adjust the call here
-#    fi
-
   echo node "$compiled_dir/circuit_js/generate_witness.js" "$compiled_dir/circuit_js/circuit.wasm" "$benchmark_dir/input/input_${input_size}.json" "$compiled_dir/witness.wtns"
   "${TIME[@]}" node "$compiled_dir/circuit_js/generate_witness.js" "$compiled_dir/circuit_js/circuit.wasm" "$benchmark_dir/input/input_${input_size}.json" "$compiled_dir/witness.wtns"
 }
 
-#function normalProve() {
-#  pushd "$CIRCUIT_DIR"
-#  avg_time 10 snarkjs groth16 prove circuit_0001.zkey witness.wtns proof.json public.json
-#  proof_size=$(ls -lh proof.json | awk '{print $5}')
-#  echo "Proof size: $proof_size"
-#  popd
+#function snarkjs_prove() {
+#  avg_time 10 snarkjs groth16 prove "$compiled_dir/circuit_0001.zkey" "$compiled_dir/witness.wtns" "$compiled_dir/proof.json" "$compiled_dir/public.json"
+#  proof_size=$(ls -lh "$compiled_dir/proof.json" | awk '{print $5}')
+#  echo "Proof size: $proof_size (snarkjs)"
 #}
-
 
 function rapid_prove() {
   avg_time 10 "$rapid_snark_prover" "$compiled_dir/circuit_0001.zkey" "$compiled_dir/witness.wtns" "$compiled_dir/proof.json" "$compiled_dir/public.json"
   proof_size=$(ls -lh "$compiled_dir/proof.json" | awk '{print $5}')
-  echo "Proof size: $proof_size"
+  echo "Proof size: $proof_size (rapidsnark)"
 }
-
 
 function verify_proof() {
   avg_time 10 snarkjs groth16 verify "$compiled_dir/verification_key.json" "$compiled_dir/public.json" "$compiled_dir/proof.json"
