@@ -27,22 +27,26 @@ circuit_dir="${benchmark_dir}/circuit"
 compiled_dir="${circuit_dir}/compiled"
 
 rapid_snark_prover=${script_dir}"/../build_prover/src/prover"
-TIME=(gtime -f "mem %M\ntime %e\ncpu %P")
+
+if [[ "$(uname)" == "Darwin" ]]; then
+  TIME=(gtime -f "mem %M\ntime %e\ncpu %P")
+else
+  TIME=(/usr/bin/time -f "mem %M\ntime %e\ncpu %P")
+fi
 
 export NODE_OPTIONS=--max_old_space_size=327680
 
 function render_circuit() {
-  pushd "$circuit_dir"
-  echo sed -i '' "s/Main([0-9]*)/Main($input_size)/" circuit.circom
-  sed -i '' "s/Main([0-9]*)/Main($input_size)/" circuit.circom
-  popd
+  if [[ "$(uname)" == "Darwin" ]]; then
+    sed -i '' "s/Main([0-9]*)/Main($input_size)/" "$circuit_dir/circuit.circom"
+  else
+    sed -i "s/Main([0-9]*)/Main($input_size)/" "$circuit_dir/circuit.circom"
+  fi
 }
 
 function compile_circuit() {
-  pushd "$circuit_dir"
-  echo circom circuit.circom --r1cs --sym --wasm -o "$compiled_dir"
-  circom circuit.circom --r1cs --sym --wasm -o "$compiled_dir"
-  popd
+  echo circom "$circuit_dir/circuit.circom" --r1cs --sym --wasm -o "$compiled_dir"
+  circom "$circuit_dir/circuit.circom" --r1cs --sym --wasm -o "$compiled_dir"
 }
 
 function run_setup() {
@@ -57,10 +61,16 @@ function run_setup() {
 }
 
 function generate_witness() {
-  pushd "$circuit_dir"
+#    if [[ "$(uname)" == "Darwin" ]]; then
+#      echo node "$compiled_dir/circuit_js/generate_witness.js" "$compiled_dir/circuit_js/circuit.wasm" "$benchmark_dir/input/input_${input_size}.json" "$compiled_dir/witness.wtns"
+#      "${TIME[@]}" node "$compiled_dir/circuit_js/generate_witness.js" "$compiled_dir/circuit_js/circuit.wasm" "$benchmark_dir/input/input_${input_size}.json" "$compiled_dir/witness.wtns"
+#    else
+#      echo "${TIME[@]}" sha256_test_cpp/sha256_test input_${INPUT_SIZE}.json witness.wtns    # need to adjust the call here
+#      "${TIME[@]}" sha256_test_cpp/sha256_test input_${INPUT_SIZE}.json witness.wtns         # need to adjust the call here
+#    fi
+
   echo node "$compiled_dir/circuit_js/generate_witness.js" "$compiled_dir/circuit_js/circuit.wasm" "$benchmark_dir/input/input_${input_size}.json" "$compiled_dir/witness.wtns"
   "${TIME[@]}" node "$compiled_dir/circuit_js/generate_witness.js" "$compiled_dir/circuit_js/circuit.wasm" "$benchmark_dir/input/input_${input_size}.json" "$compiled_dir/witness.wtns"
-  popd
 }
 
 #function normalProve() {
@@ -73,18 +83,14 @@ function generate_witness() {
 
 
 function rapid_prove() {
-  pushd "$circuit_dir"
   avg_time 10 "$rapid_snark_prover" "$compiled_dir/circuit_0001.zkey" "$compiled_dir/witness.wtns" "$compiled_dir/proof.json" "$compiled_dir/public.json"
   proof_size=$(ls -lh "$compiled_dir/proof.json" | awk '{print $5}')
   echo "Proof size: $proof_size"
-  popd
 }
 
 
 function verify_proof() {
-  pushd "$circuit_dir"
   avg_time 10 snarkjs groth16 verify "$compiled_dir/verification_key.json" "$compiled_dir/public.json" "$compiled_dir/proof.json"
-  popd
 }
 
 function avg_time() {
