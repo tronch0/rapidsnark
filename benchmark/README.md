@@ -23,12 +23,12 @@ A valid environment to run the benchmark tests contains the following:
 3. [Merkle tree inclusion](./merkletree) - Test Merkle tree inclusion proof.
 
 To run a specific benchmark test, run the `benchmark_mac.sh` with the following arguments:
-- <strong>Benchmark name</strong> - choose the benchmark test to run.
+- <strong>Benchmark name</strong> - choose the test to run by specify the folder name of the test (e.g for merkle tree inclusion, use `merkletree`)
  - <strong>Input Parameters file</strong> - Choose the input file you wish to use in the benchmark (need to pass the postfix after `input_` of the filename).
  - <strong>Degree of ptau file</strong> - Specify the degree of the needed patu (will be downloaded if not exist).
 
 ### Example
-Say we want to run a benchmark on merkle tree inclusion proof for a tree with height of 30, we will need to run the following command `./benchmark_mac.sh merkle tree 30 20`.
+Say we want to run a benchmark on merkle tree inclusion proof for a tree with height of 30, we will need to run the following command `./benchmark_mac.sh merkletree 30 20`.
 
 ## Contributing
 
