@@ -28,7 +28,9 @@ To run a specific benchmark test, run the `run_benchmark.sh` with the following 
  - <strong>Degree of ptau file</strong> - Specify the degree of the needed patu (will be downloaded if not exist).
 
 ### Example
-Say we want to run a benchmark on merkle tree inclusion proof for a tree with height of 30, we will need to run the following command `./run_benchmark.sh merkletree 30 20`.
+
+Say we want to run a benchmark on merkle tree inclusion proof for a tree with depth of 30, and we want to use `powersOfTau28_hez_final_20.ptau`, we will need to run the following command `./run_benchmark.sh merkle tree 30 20`.
+
 
 ## Contributing
 
