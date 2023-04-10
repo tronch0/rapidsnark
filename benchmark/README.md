@@ -22,7 +22,7 @@ A valid environment to run the benchmark tests contains the following:
 2. [SHA256](./sha256) - Evaluate SHA256 hashing efficiency.
 3. [Merkle tree inclusion](./merkletree) - Test Merkle tree inclusion proof.
 
-To run a specific benchmark test, run the `benchmark_mac.sh` with the following arguments:
+To run a specific benchmark test, run the `benchmark.sh` with the following arguments:
 - <strong>Benchmark name</strong> - choose the test to run by specify the folder name of the test (e.g for merkle tree inclusion, use `merkletree`)
  - <strong>Input Parameters file</strong> - Choose the input file you wish to use in the benchmark (need to pass the postfix after `input_` of the filename).
  - <strong>Degree of ptau file</strong> - Specify the degree of the needed patu (will be downloaded if not exist).
