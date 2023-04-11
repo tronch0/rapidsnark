@@ -114,7 +114,7 @@ by this one
 
 This section aims to provide insight into the performance and cost of widely-used proofs with rapidsnark. We are testing the most commonly used circuits with different inputs and scenarios to better understand their behavior under various conditions and explore opportunities for optimization.
 
-Please navigate to the [/benchmark](./benchmark)  folder to explore the benchmarking tests.
+Please navigate to the [/benchmark](./benchmark) folder to explore the benchmarking tests.
 
 ## License
 
