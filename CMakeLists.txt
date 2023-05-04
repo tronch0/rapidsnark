@@ -10,6 +10,8 @@ project(rapidsnark LANGUAGES CXX ASM)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+option(IS_APPLE_CHIP "Indicates if the target platform is an Apple chip (M1, M2, etc.)" OFF)
+
 message("USE_ASM=" ${USE_ASM})
 message("USE_OPENMP=" ${USE_OPENMP})
 message("CMAKE_CROSSCOMPILING=" ${CMAKE_CROSSCOMPILING})
@@ -30,15 +32,18 @@ endif()
 
 include_directories(BEFORE ${GMP_INCLUDE_DIR})
 
-
 if(USE_OPENMP)
     find_package(OpenMP)
 
     if(OpenMP_CXX_FOUND)
+
         if(TARGET_PLATFORM MATCHES "android")
             message("OpenMP is used")
 
         elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
+            message("OpenMP is used")
+
+        elseif (TARGET_PLATFORM MATCHES "arm64_host" AND IS_APPLE_CHIP)
             message("OpenMP is used")
 
         else()
@@ -48,7 +53,6 @@ if(USE_OPENMP)
         endif()
     endif()
 endif()
-
 
 add_subdirectory(src)
 

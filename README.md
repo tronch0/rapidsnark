@@ -31,7 +31,7 @@ git submodule init
 git submodule update
 ./build_gmp.sh host_noasm
 mkdir build_prover && cd build_prover
-cmake .. -DTARGET_PLATFORM=arm64_host -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=../package
++cmake .. -DTARGET_PLATFORM=arm64_host -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=../package -DIS_APPLE_CHIP=ON
 make -j4 && make install
 ````
 
