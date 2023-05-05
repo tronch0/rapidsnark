@@ -130,6 +130,12 @@ if(OpenMP_CXX_FOUND)
 
     elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
         target_link_libraries(prover OpenMP::OpenMP_CXX)
+
+
+    elseif(TARGET_PLATFORM MATCHES "arm64_host")
+        target_link_libraries(prover -fopenmp)
+        target_link_libraries(rapidsnark -fopenmp)
+
     endif()
 
 endif()

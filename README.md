@@ -1,99 +1,38 @@
-# rapidsnark
+# rapidsnark - Apple's chip edition (M1, M2...)
 
-rapid snark is a zkSnark proof generation written in C++. That generates proofs created in [circom](https://github.com/iden3/snarkjs) and [snarkjs](https://github.com/iden3/circom) very fast.
+<b>Important note:</b> All information & instructions assumes host machine are arm64 Apple chip with MacOS.
 
 ## dependencies
 
 You should have installed gcc and cmake
 
-In ubuntu:
-
 ````
-sudo apt install build-essential
-sudo apt install cmake
+brew install gcc
+brew install cmake
 ````
 
-## compile prover for x86_64 host machine
+To check the support for optiomized executation througth parallelize processes you can check if your installed version of GCC supports OpenMP by running the following command:
+````sh
+g++ -fopenmp --version
+````
+If you see the version information without any error messages, your GCC installation supports OpenMP.
+
+## Compile Prover (Apple chips)
 
 ````sh
 git submodule init
-git submodule update
-./build_gmp.sh host
-mkdir build_prover && cd build_prover
-cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=../package
-make -j4 && make install
-````
 
-## compile prover for macOS arm64 host machine
-
-````sh
-git submodule init
 git submodule update
+
 ./build_gmp.sh host_noasm
+
 mkdir build_prover && cd build_prover
-cmake .. -DTARGET_PLATFORM=arm64_host -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=../package
+
+cmake .. -DCMAKE_C_COMPILER=$(brew --prefix gcc)/bin/gcc-12 -DCMAKE_CXX_COMPILER=$(brew --prefix gcc)/bin/g++-12 -DTARGET_PLATFORM=arm64_host -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=../package -DIS_APPLE_CHIP=ON
+
 make -j4 && make install
 ````
-
-## compile prover for linux arm64 host machine
-
-````sh
-git submodule init
-git submodule update
-./build_gmp.sh host
-mkdir build_prover && cd build_prover
-cmake .. -DTARGET_PLATFORM=arm64_host -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=../package
-make -j4 && make install
-````
-
-## compile prover for linux arm64 machine
-
-````sh
-git submodule init
-git submodule update
-./build_gmp.sh host
-mkdir build_prover && cd build_prover
-cmake .. -DTARGET_PLATFORM=aarch64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=../package_aarch64
-make -j4 && make install
-````
-
-## compile prover for Android
-
-Install Android NDK from https://developer.android.com/ndk or with help of "SDK Manager" in Android Studio.
-
-Set the value of ANDROID_NDK environment variable to the absolute path of Android NDK root directory.
-
-Examples:
-
-````sh
-export ANDROID_NDK=/home/test/Android/Sdk/ndk/23.1.7779620  # NDK is installed by "SDK Manager" in Android Studio.
-export ANDROID_NDK=/home/test/android-ndk-r23b              # NDK is installed as a stand-alone package.
-````
-
-Compilation:
-
-````sh
-git submodule init
-git submodule update
-./build_gmp.sh android
-mkdir build_prover_android && cd build_prover_android
-cmake .. -DTARGET_PLATFORM=ANDROID -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=../package_android
-make -j4 && make install
-````
-
-## compile prover for iOS
-
-Install Xcode.
-
-````sh
-git submodule init
-git submodule update
-./build_gmp.sh ios
-mkdir build_prover_ios && cd build_prover_ios
-cmake .. -GXcode -DTARGET_PLATFORM=IOS -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=../package_ios
-````
-Open generated Xcode project and compile prover.
-
+*<b>in the cmake command:</b> please change the g++ version to what you installed (in the example we are using version 12)
 
 ## Building proof
 
