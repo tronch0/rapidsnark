@@ -11,7 +11,7 @@ brew install gcc
 brew install cmake
 ````
 
-To check the support for optiomized executation througth parallelize processes you can check if your installed version of GCC supports OpenMP by running the following command:
+To verify support for optimized execution through parallel processing, ensure that your installed version of GCC is compatible with OpenMP. You can do this by executing the following command:
 ````sh
 g++ -fopenmp --version
 ````
